@@ -1,45 +1,27 @@
-const taskInput = document.getElementById("taskInput");
-const addBtn = document.getElementById("addBtn");
-const taskList = document.getElementById("taskList");
-
-// Load tasks from local storage
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-renderTasks();
-
-addBtn.addEventListener("click", addTask);
-
 function addTask() {
-  const text = taskInput.value.trim();
-  if (text === "") return;
-  tasks.push({ text, done: false });
-  taskInput.value = "";
-  saveAndRender();
-}
+  const taskInput = document.getElementById("taskInput");
+  const taskList = document.getElementById("taskList");
 
-function toggleTask(index) {
-  tasks[index].done = !tasks[index].done;
-  saveAndRender();
-}
+  if (taskInput.value.trim() === "") return;
 
-function deleteTask(index) {
-  tasks.splice(index, 1);
-  saveAndRender();
-}
+  let li = document.createElement("li");
+  li.textContent = taskInput.value;
 
-function saveAndRender() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
-}
-
-function renderTasks() {
-  taskList.innerHTML = "";
-  tasks.forEach((task, index) => {
-    const li = document.createElement("li");
-    li.className = task.done ? "done" : "";
-    li.innerHTML = `
-      <span onclick="toggleTask(${index})">${task.text}</span>
-      <button class="delete" onclick="deleteTask(${index})">X</button>
-    `;
-    taskList.appendChild(li);
+  // Toggle complete on click
+  li.addEventListener("click", () => {
+    li.classList.toggle("completed");
   });
+
+  // Delete button
+  let delBtn = document.createElement("button");
+  delBtn.textContent = "X";
+  delBtn.onclick = (e) => {
+    e.stopPropagation(); // prevent toggle when deleting
+    li.remove();
+  };
+
+  li.appendChild(delBtn);
+  taskList.appendChild(li);
+
+  taskInput.value = "";
 }
